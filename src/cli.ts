@@ -2,5 +2,6 @@ import { compileAddon, Target } from "./lib.ts";
 
 compileAddon({
     packName: "packName",
-    behaviourPackPath: "/BP/"
+    behaviourPackPath: "/BP/",
+    resourcePackPath: "/RP/"
 });
