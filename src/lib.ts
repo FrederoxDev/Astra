@@ -33,6 +33,20 @@ export interface CompilerConfig {
     resourcePackPath?: string
 }
 
+export async function getFileInfo(path: string): Promise<Deno.FileInfo | undefined> {
+    try {
+        const res = await Deno.stat(path);
+        return res;
+    }
+    catch (err) {
+        if (err instanceof Deno.errors.NotFound) {
+            return undefined;
+        }
+
+        throw err;
+    }
+}
+
 export async function compileAddon(config: CompilerConfig, target: CompilationTarget): Promise<void> {
     let count = 0;
     const start = performance.now();
@@ -50,20 +64,20 @@ export async function compileAddon(config: CompilerConfig, target: CompilationTa
     console.log(`Compiled ${count} files in ${timeTaken}ms`)
 }
 
-function targetToPath(target: CompilationTarget, packType: PackType, packName: string): string {
+export function targetToPath(target: CompilationTarget, packType: PackType, packName: string): string {
     const packPath = packType === PackType.Behaviour ? "BP" : "RP";
     const folderName = packType === PackType.Behaviour ? "development_behavior_packs" : "development_resource_packs";
 
     if (target === CompilationTarget.Packaged) {
-        return `${Deno.cwd()}/dist/${packName} ${packPath}/`
+        return `${Deno.cwd()}\\dist\\${packName} ${packPath}\\`
     }
 
     else if (target === CompilationTarget.Stable) {
-        return `${localAppData}/Packages/${stablePackage}/${comMojang}/${folderName}/${packName} ${packPath}/`
+        return `${localAppData}\\Packages\\${stablePackage}\\${comMojang}\\${folderName}\\${packName} ${packPath}\\`
     }
 
     else if (target === CompilationTarget.Preview) {
-        return `${localAppData}/Packages/${previewPackage}/${comMojang}/${folderName}/${packName} ${packPath}/`
+        return `${localAppData}\\Packages\\${previewPackage}\\${comMojang}\\${folderName}\\${packName} ${packPath}\\`
     }
 
     throw new Error(`Unknown Pack Type ${packType}`);
@@ -71,7 +85,7 @@ function targetToPath(target: CompilationTarget, packType: PackType, packName: s
 
 async function compileDirectory(path: string, target: CompilationTarget, packType: PackType, packName: string): Promise<number> {
     let fileCount = 0;
-    const packDir = Deno.cwd() + (packType === PackType.Behaviour ? "/BP/" : "/RP/") + path;
+    const packDir = Deno.cwd() + (packType === PackType.Behaviour ? "\\BP\\" : "\\RP\\") + path;
     const destDir = targetToPath(target, packType, packName) + path;
     emptyDirSync(destDir);
 
@@ -82,7 +96,7 @@ async function compileDirectory(path: string, target: CompilationTarget, packTyp
             compileFile(packDir, destDir, dirEntry.name);
         }
         else if (dirEntry.isDirectory) {
-            fileCount += await compileDirectory(path + `${dirEntry.name}/`, target, packType, packName)
+            fileCount += await compileDirectory(path + `${dirEntry.name}\\`, target, packType, packName)
         }
     }
 
@@ -91,7 +105,7 @@ async function compileDirectory(path: string, target: CompilationTarget, packTyp
 
 async function compileFile(packPath: string, destPath: string, fileName: string) {
     if (fileName.endsWith(".ts")) {
-        const fileText = await Deno.readTextFile(packPath + `/${fileName}`);
+        const fileText = await Deno.readTextFile(packPath + `\\${fileName}`);
         const transpiledJs = transform(fileText, {
             jsc: {
                 target: "es2021",
@@ -103,6 +117,6 @@ async function compileFile(packPath: string, destPath: string, fileName: string)
         await Deno.writeTextFile(destPath + `${fileName.replace(".ts", ".js")}`, transpiledJs)
     }
     else {
-        await copy(`${packPath}/${fileName}`, `${destPath}${fileName}`, { overwrite: true })
+        await copy(`${packPath}\\${fileName}`, `${destPath}${fileName}`, { overwrite: true })
     }
 }

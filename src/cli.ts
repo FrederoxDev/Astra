@@ -1,5 +1,6 @@
-import { CompilationTarget, compileAddon, CompilerConfig } from "./lib.ts";
+import { CompilationTarget, compileAddon, CompilerConfig, getFileInfo, PackType, targetToPath } from "./lib.ts";
 import { parse } from "https://deno.land/std@0.181.0/flags/mod.ts";
+import {  } from "https://deno.land/std@0.181.0/fs/mod.ts";
 
 const version = "1.0.0";
 
@@ -26,19 +27,40 @@ if (flags._[0] === undefined) {
 
 const packConfig: CompilerConfig = {
     packName: "ComputerCraft",
-    behaviourPackPath: "/BP/",
-    resourcePackPath: "/RP/"
+    behaviourPackPath: "\\BP\\",
+    resourcePackPath: "\\RP\\"
 }
 
 if (flags._[0] === "watch") {
-    await compileAddon(packConfig, flags.preview ? CompilationTarget.Preview : CompilationTarget.Stable);
+    const target = flags.preview ? CompilationTarget.Preview : CompilationTarget.Stable;
+    await compileAddon(packConfig, target);
 
     console.log("Starting watch mode...")
     // Todo: Watch both RP And BP
-    let watcher = Deno.watchFs(Deno.cwd() + packConfig.behaviourPackPath);
+    const watcher = Deno.watchFs(Deno.cwd());
+
+    const behaviourPath = Deno.cwd() + "\\BP\\";
+    const resourcePath = Deno.cwd() + "\\RP\\";
 
     for await (const event of watcher) {
-        console.log(">>>> event", event);
+        // Ignore non addon stuff;
+        if (!event.paths[0].startsWith(behaviourPath) && !event.paths[0].startsWith(resourcePath)) continue;
+        
+        const packType = event.paths[0].startsWith(behaviourPath) ? PackType.Behaviour : PackType.Resource;
+        const relativePath = event.paths[0].replace(packType === PackType.Behaviour ? behaviourPath : resourcePath, "");
+        const fileInfo = await getFileInfo(event.paths[0]);
+        const destBasePath = targetToPath(target, packType, packConfig.packName);
+        const destPath = destBasePath + relativePath
+
+        if (fileInfo === undefined) {
+            const destPathExists = await getFileInfo(destPath) !== undefined;
+            if (destPathExists) 
+                await Deno.remove(destPath, { recursive: true });
+            
+            continue;
+        }
+
+        console.log(relativePath, fileInfo.isFile, fileInfo.isDirectory)
     }
 }
 
