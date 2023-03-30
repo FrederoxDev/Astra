@@ -1,6 +1,6 @@
-import { CompilationTarget, compileAddon, CompilerConfig, getFileInfo, PackType, targetToPath } from "./lib.ts";
+import { CompilationTarget, compileAddon, compileFile, CompilerConfig, getFileInfo, PackType, targetToPath } from "./lib.ts";
 import { parse } from "https://deno.land/std@0.181.0/flags/mod.ts";
-import {  } from "https://deno.land/std@0.181.0/fs/mod.ts";
+import { dirname, basename } from "https://deno.land/std@0.181.0/path/mod.ts";
 
 const version = "1.0.0";
 
@@ -25,11 +25,15 @@ if (flags._[0] === undefined) {
     Deno.exit(1);
 }
 
-const packConfig: CompilerConfig = {
-    packName: "ComputerCraft",
-    behaviourPackPath: "\\BP\\",
-    resourcePackPath: "\\RP\\"
+const configPath = Deno.cwd() + "\\compiler.config.json";
+const configExists = await getFileInfo(configPath) !== undefined;
+
+if (!configExists) {
+    console.log("compiler.config.json not found");
+    Deno.exit(1);
 }
+
+const packConfig: CompilerConfig = JSON.parse(Deno.readTextFileSync(configPath))
 
 if (flags._[0] === "watch") {
     const target = flags.preview ? CompilationTarget.Preview : CompilationTarget.Stable;
@@ -54,13 +58,24 @@ if (flags._[0] === "watch") {
 
         if (fileInfo === undefined) {
             const destPathExists = await getFileInfo(destPath) !== undefined;
-            if (destPathExists) 
+            if (destPathExists) {
+                const start = performance.now();
                 await Deno.remove(destPath, { recursive: true });
+                console.log(`Removed: [${relativePath}] in ${performance.now() - start}ms`)
+            }
             
             continue;
         }
 
-        console.log(relativePath, fileInfo.isFile, fileInfo.isDirectory)
+        if (fileInfo.isFile) {
+            const start = performance.now();
+            await compileFile(dirname(event.paths[0]), dirname(destPath), basename(event.paths[0]));
+            console.log(`Updated: [${relativePath}] in ${performance.now() - start}ms`)
+        }
+
+        if (fileInfo.isDirectory) {
+            console.log("Dir!")
+        }
     }
 }
 

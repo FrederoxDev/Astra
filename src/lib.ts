@@ -69,7 +69,7 @@ export function targetToPath(target: CompilationTarget, packType: PackType, pack
     const folderName = packType === PackType.Behaviour ? "development_behavior_packs" : "development_resource_packs";
 
     if (target === CompilationTarget.Packaged) {
-        return `${Deno.cwd()}\\dist\\${packName} ${packPath}\\`
+        return `${Deno.cwd()}\\dist\\${packPath}\\`
     }
 
     else if (target === CompilationTarget.Stable) {
@@ -103,7 +103,7 @@ async function compileDirectory(path: string, target: CompilationTarget, packTyp
     return fileCount;
 }
 
-async function compileFile(packPath: string, destPath: string, fileName: string) {
+export async function compileFile(packPath: string, destPath: string, fileName: string) {
     if (fileName.endsWith(".ts")) {
         const fileText = await Deno.readTextFile(packPath + `\\${fileName}`);
         const transpiledJs = transform(fileText, {
@@ -114,9 +114,9 @@ async function compileFile(packPath: string, destPath: string, fileName: string)
                 },
             },
         }).code;
-        await Deno.writeTextFile(destPath + `${fileName.replace(".ts", ".js")}`, transpiledJs)
+        await Deno.writeTextFile(destPath + `\\${fileName.replace(".ts", ".js")}`, transpiledJs)
     }
     else {
-        await copy(`${packPath}\\${fileName}`, `${destPath}${fileName}`, { overwrite: true })
+        await copy(`${packPath}\\${fileName}`, `${destPath}\\${fileName}`, { overwrite: true })
     }
 }
