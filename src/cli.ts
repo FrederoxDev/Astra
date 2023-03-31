@@ -1,6 +1,7 @@
 import { CompilationTarget, compileAddon, compileFile, CompilerConfig, getFileInfo, PackType, targetToPath } from "./lib.ts";
 import { parse } from "https://deno.land/std@0.181.0/flags/mod.ts";
 import { dirname, basename } from "https://deno.land/std@0.181.0/path/mod.ts";
+import { emptyDirSync, ensureDirSync } from "https://deno.land/std@0.181.0/fs/mod.ts";
 
 const version = "1.0.0";
 
@@ -27,6 +28,38 @@ if (flags._[0] === undefined) {
 
 const configPath = Deno.cwd() + "\\compiler.config.json";
 const configExists = await getFileInfo(configPath) !== undefined;
+
+if (flags._[0] === "scaffold") {
+    // Don't create a new project if there is already a project in the CWD
+    if (configExists) {
+        console.log("compiler.config.json already found")
+        Deno.exit(1);
+    }
+
+    const packName = prompt("Project Name:");
+    if (packName === null) {
+        console.log("Invalid Pack Name")
+        Deno.exit(1);
+    }
+
+    const config: CompilerConfig = {
+        packName,
+        behaviourPackPath: "\\BP\\",
+        resourcePackPath: "\\RP\\"
+    }
+
+    Deno.writeTextFileSync(Deno.cwd() + "\\compiler.config.json", JSON.stringify(config, null, 4));
+    ensureDirSync(Deno.cwd() + "\\BP\\");
+    ensureDirSync(Deno.cwd() + "\\RP\\");
+
+    Deno.writeTextFileSync(Deno.cwd() + "\\.gitignore", "/dist/");
+
+    Deno.run({ cmd: ["git", "init"], stdout: "null" });
+
+    console.log("Initialized Project in directory");
+    console.log("Initialized Git Repository");
+    Deno.exit(0);
+}
 
 if (!configExists) {
     console.log("compiler.config.json not found");
@@ -77,8 +110,11 @@ if (flags._[0] === "watch") {
             console.log("Dir!")
         }
     }
+
+    Deno.exit(0);
 }
 
 if (flags._[0] === "package") {
     await compileAddon(packConfig, CompilationTarget.Packaged);
+    Deno.exit(0);
 }
