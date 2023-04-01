@@ -83,7 +83,7 @@ export function targetToPath(target: CompilationTarget, packType: PackType, pack
     throw new Error(`Unknown Pack Type ${packType}`);
 }
 
-async function compileDirectory(path: string, target: CompilationTarget, packType: PackType, packName: string): Promise<number> {
+export async function compileDirectory(path: string, target: CompilationTarget, packType: PackType, packName: string): Promise<number> {
     let fileCount = 0;
     const packDir = Deno.cwd() + (packType === PackType.Behaviour ? "\\BP\\" : "\\RP\\") + path;
     const destDir = targetToPath(target, packType, packName) + path;

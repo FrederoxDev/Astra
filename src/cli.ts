@@ -1,4 +1,4 @@
-import { CompilationTarget, compileAddon, compileFile, CompilerConfig, getFileInfo, PackType, targetToPath } from "./lib.ts";
+import { CompilationTarget, compileAddon, compileDirectory, compileFile, CompilerConfig, getFileInfo, PackType, targetToPath } from "./lib.ts";
 import { parse } from "https://deno.land/std@0.181.0/flags/mod.ts";
 import { dirname, basename } from "https://deno.land/std@0.181.0/path/mod.ts";
 import { ensureDirSync } from "https://deno.land/std@0.181.0/fs/mod.ts";
@@ -107,7 +107,10 @@ if (flags._[0] === "watch") {
         }
 
         if (fileInfo.isDirectory) {
-            console.log("Dir!")
+            const start = performance.now();
+            const count = await compileDirectory(relativePath, target, packType, packConfig.packName);
+            const timeTaken = performance.now() - start;
+            console.log(`Compiled ${count} files in ${timeTaken}ms`);
         }
     }
 
