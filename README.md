@@ -1,16 +1,16 @@
 # Installation
 
-To install cosmic compiler, download the latest .exe file from the GitHub Releases tab. Next take that .exe and store it in a good location (e.g. `C:\Program Files\Cosmic Compiler\`), and then add that to your PATH environment variables so the .exe can be used in command prompt and PowerShell.
+To install Astra, download the latest .exe file from the GitHub Releases tab. Next take that .exe and store it in a good location (e.g. `C:\Program Files\Astra\`), and then add that to your PATH environment variables so the .exe can be used in command prompt and PowerShell.
 
 # Features
 
-The compiler has been built for speed, not features. Features offered by other compilers like `Custom Components` do not currently exist inside of Cosmic Compiler. Therefore you may want to chose those compilers if you need those features. Cosmic Compiler does offer `TypeScript` compilation using `SWC` and build times are significantly faster compared to other compilers.
+The compiler has been built for speed, not features. Features offered by other compilers like `Custom Components` do not currently exist inside of Astra. Therefore you may want to chose those compilers if you need those features. Astra does offer `TypeScript` compilation using `SWC` and build times are significantly faster compared to other compilers.
 
 # Commands
 
 ## `[-v | --version]`
 
-This will log the current version of the Cosmic Compiler
+This will log the current version of the Astra
 
 ## `scaffold`
 
