@@ -1,7 +1,7 @@
 import { CompilationTarget, compileAddon, compileFile, CompilerConfig, getFileInfo, PackType, targetToPath } from "./lib.ts";
 import { parse } from "https://deno.land/std@0.181.0/flags/mod.ts";
 import { dirname, basename } from "https://deno.land/std@0.181.0/path/mod.ts";
-import { emptyDirSync, ensureDirSync } from "https://deno.land/std@0.181.0/fs/mod.ts";
+import { ensureDirSync } from "https://deno.land/std@0.181.0/fs/mod.ts";
 
 const version = "1.0.0";
 
@@ -22,7 +22,7 @@ if (flags.version) {
 // If there were no flags passed
 if (flags._[0] === undefined) {
     console.log("flags: [-v | --version] [--preview]");
-    console.log("commands: [watch] [package]")
+    console.log("commands: [watch] [package] [scaffold]")
     Deno.exit(1);
 }
 
