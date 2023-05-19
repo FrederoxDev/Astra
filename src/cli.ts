@@ -3,7 +3,7 @@ import { parse } from "https://deno.land/std@0.181.0/flags/mod.ts";
 import { dirname, basename } from "https://deno.land/std@0.181.0/path/mod.ts";
 import { ensureDirSync } from "https://deno.land/std@0.181.0/fs/mod.ts";
 
-const version = "v1.0.0";
+const version = "v1.0.1";
 
 // Get CLI Flags
 const flags = parse(Deno.args, {

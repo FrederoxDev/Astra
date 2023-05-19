@@ -21,3 +21,7 @@ This will create a build of your project into the `\dist\` folder in your CWD.
 ## `watch [--preview]`
 
 This will create a build of your project into `com.mojang`, and will incrementally build any changes made in your project. Use the `preview` flag to build to the preview edition of Minecraft.
+
+# Building
+
+To compile Astra you can run `deno compile src/cli.ts --allow-net --allow-env --allow-read --allow-write`

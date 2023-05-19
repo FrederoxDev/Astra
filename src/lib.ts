@@ -54,11 +54,11 @@ export async function compileAddon(config: CompilerConfig, target: CompilationTa
 
     if (config.behaviourPackPath !== undefined) {
         count += await compileDirectory("", target, PackType.Behaviour, config.packName);
-    } 
+    }
 
     if (config.resourcePackPath !== undefined) {
         count += await compileDirectory("", target, PackType.Resource, config.packName);
-    } 
+    }
 
     const timeTaken = performance.now() - start;
     console.log(`Compiled ${count} files in ${timeTaken}ms`)
@@ -106,15 +106,20 @@ export async function compileDirectory(path: string, target: CompilationTarget, 
 export async function compileFile(packPath: string, destPath: string, fileName: string) {
     if (fileName.endsWith(".ts")) {
         const fileText = await Deno.readTextFile(packPath + `\\${fileName}`);
-        const transpiledJs = transform(fileText, {
-            jsc: {
-                target: "es2021",
-                parser: {
-                  syntax: "typescript",
+        try {
+            const transpiledJs = transform(fileText, {
+                jsc: {
+                    target: "es2021",
+                    parser: {
+                        syntax: "typescript",
+                    },
                 },
-            },
-        }).code;
-        await Deno.writeTextFile(destPath + `\\${fileName.replace(".ts", ".js")}`, transpiledJs)
+            }).code;
+
+            await Deno.writeTextFile(destPath + `\\${fileName.replace(".ts", ".js")}`, transpiledJs)
+        } catch (e) {
+            console.log(`Failed to compile ${fileName}`)
+        } 
     }
     else {
         await copy(`${packPath}\\${fileName}`, `${destPath}\\${fileName}`, { overwrite: true })
