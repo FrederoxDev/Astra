@@ -24,4 +24,4 @@ This will create a build of your project into `com.mojang`, and will incremental
 
 # Building
 
-To compile Astra you can run `deno compile src/cli.ts --allow-net --allow-env --allow-read --allow-write`
+To compile Astra you can run `deno compile src/cli.ts --output out/astra.exe --allow-net --allow-env --allow-read --allow-write --allow-run`

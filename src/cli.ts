@@ -22,7 +22,7 @@ if (flags.version) {
 // If there were no flags passed
 if (flags._[0] === undefined) {
     console.log("flags: [-v | --version] [--preview]");
-    console.log("commands: [watch] [package] [scaffold]")
+    console.log("commands: [watch] [package] [scaffold] [com.mojang]")
     Deno.exit(1);
 }
 
@@ -121,3 +121,14 @@ if (flags._[0] === "package") {
     await compileAddon(packConfig, CompilationTarget.Packaged);
     Deno.exit(0);
 }
+
+if (flags._[0] === "outdir") {
+    const target = flags.preview ? CompilationTarget.Preview : CompilationTarget.Stable;
+
+    if (packConfig.behaviourPackPath !== undefined) {
+        console.log(`BP: "${targetToPath(target, PackType.Behaviour, packConfig.packName)}"`)
+    }
+    if (packConfig.resourcePackPath !== undefined) {
+        console.log(`RP: "${targetToPath(target, PackType.Resource, packConfig.packName)}"`)
+    }
+} 
