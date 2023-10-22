@@ -1,5 +1,6 @@
 /dist/
 /BP/
 /RP/
+/out/
 *.exe
 compiler.config.json
