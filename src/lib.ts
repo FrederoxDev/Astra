@@ -4,7 +4,7 @@ import { transform } from "https://deno.land/x/swc@0.2.1/mod.ts";
 const localAppData = Deno.env.get('localappdata');
 const stablePackage = "Microsoft.MinecraftUWP_8wekyb3d8bbwe";
 const previewPackage = "Microsoft.MinecraftWindowsBeta_8wekyb3d8bbwe";
-const comMojang = "LocalState\\games\\com.mojang"
+const comMojang = "LocalState/games/com.mojang"
 
 
 /**
@@ -69,15 +69,15 @@ export function targetToPath(target: CompilationTarget, packType: PackType, pack
     const folderName = packType === PackType.Behaviour ? "development_behavior_packs" : "development_resource_packs";
 
     if (target === CompilationTarget.Packaged) {
-        return `${Deno.cwd()}\\dist\\${packPath}\\`
+        return `${Deno.cwd()}/dist/${packPath}/`
     }
 
     else if (target === CompilationTarget.Stable) {
-        return `${localAppData}\\Packages\\${stablePackage}\\${comMojang}\\${folderName}\\${packName} ${packPath}\\`
+        return `${localAppData}/Packages/${stablePackage}/${comMojang}/${folderName}/${packName} ${packPath}/`
     }
 
     else if (target === CompilationTarget.Preview) {
-        return `${localAppData}\\Packages\\${previewPackage}\\${comMojang}\\${folderName}\\${packName} ${packPath}\\`
+        return `${localAppData}/Packages/${previewPackage}/${comMojang}/${folderName}/${packName} ${packPath}/`
     }
 
     throw new Error(`Unknown Pack Type ${packType}`);
@@ -85,7 +85,7 @@ export function targetToPath(target: CompilationTarget, packType: PackType, pack
 
 export async function compileDirectory(path: string, target: CompilationTarget, packType: PackType, packName: string): Promise<number> {
     let fileCount = 0;
-    const packDir = Deno.cwd() + (packType === PackType.Behaviour ? "\\BP\\" : "\\RP\\") + path;
+    const packDir = Deno.cwd() + (packType === PackType.Behaviour ? "/BP/" : "/RP/") + path;
     const destDir = targetToPath(target, packType, packName) + path;
     emptyDirSync(destDir);
 
@@ -96,7 +96,7 @@ export async function compileDirectory(path: string, target: CompilationTarget, 
             compileFile(packDir, destDir, dirEntry.name);
         }
         else if (dirEntry.isDirectory) {
-            fileCount += await compileDirectory(path + `${dirEntry.name}\\`, target, packType, packName)
+            fileCount += await compileDirectory(path + `${dirEntry.name}/`, target, packType, packName)
         }
     }
 
@@ -105,7 +105,7 @@ export async function compileDirectory(path: string, target: CompilationTarget, 
 
 export async function compileFile(packPath: string, destPath: string, fileName: string) {
     if (fileName.endsWith(".ts")) {
-        const fileText = await Deno.readTextFile(packPath + `\\${fileName}`);
+        const fileText = await Deno.readTextFile(packPath + `/${fileName}`);
         try {
             const transpiledJs = transform(fileText, {
                 jsc: {
@@ -116,12 +116,12 @@ export async function compileFile(packPath: string, destPath: string, fileName: 
                 },
             }).code;
 
-            await Deno.writeTextFile(destPath + `\\${fileName.replace(".ts", ".js")}`, transpiledJs)
+            await Deno.writeTextFile(destPath + `/${fileName.replace(".ts", ".js")}`, transpiledJs)
         } catch (e) {
             console.log(`Failed to compile ${fileName}`)
         } 
     }
     else {
-        await copy(`${packPath}\\${fileName}`, `${destPath}\\${fileName}`, { overwrite: true })
+        await copy(`${packPath}/${fileName}`, `${destPath}/${fileName}`, { overwrite: true })
     }
 }
