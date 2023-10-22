@@ -26,7 +26,7 @@ if (flags._[0] === undefined) {
     Deno.exit(1);
 }
 
-const configPath = Deno.cwd() + "\\compiler.config.json";
+const configPath = Deno.cwd() + "/compiler.config.json";
 const configExists = await getFileInfo(configPath) !== undefined;
 
 if (flags._[0] === "scaffold") {
@@ -44,15 +44,15 @@ if (flags._[0] === "scaffold") {
 
     const config: CompilerConfig = {
         packName,
-        behaviourPackPath: "\\BP\\",
-        resourcePackPath: "\\RP\\"
+        behaviourPackPath: "/BP/",
+        resourcePackPath: "/RP/"
     }
 
-    Deno.writeTextFileSync(Deno.cwd() + "\\compiler.config.json", JSON.stringify(config, null, 4));
-    ensureDirSync(Deno.cwd() + "\\BP\\");
-    ensureDirSync(Deno.cwd() + "\\RP\\");
+    Deno.writeTextFileSync(Deno.cwd() + "/compiler.config.json", JSON.stringify(config, null, 4));
+    ensureDirSync(Deno.cwd() + "/BP/");
+    ensureDirSync(Deno.cwd() + "/RP/");
 
-    Deno.writeTextFileSync(Deno.cwd() + "\\.gitignore", "/dist/");
+    Deno.writeTextFileSync(Deno.cwd() + "/.gitignore", "/dist/");
 
     Deno.run({ cmd: ["git", "init"], stdout: "null" });
 
@@ -76,8 +76,8 @@ if (flags._[0] === "watch") {
     // Todo: Watch both RP And BP
     const watcher = Deno.watchFs(Deno.cwd());
 
-    const behaviourPath = Deno.cwd() + "\\BP\\";
-    const resourcePath = Deno.cwd() + "\\RP\\";
+    const behaviourPath = Deno.cwd() + "/BP/";
+    const resourcePath = Deno.cwd() + "/RP/";
 
     for await (const event of watcher) {
         // Ignore non addon stuff;
