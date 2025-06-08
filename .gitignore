@@ -4,3 +4,9 @@
 /out/
 *.exe
 compiler.config.json
+.devenv*
+devenv.local.nix
+.direnv
+.pre-commit-config.yaml
+devenv.*
+.envrc
